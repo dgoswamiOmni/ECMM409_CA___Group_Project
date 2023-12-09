@@ -34,3 +34,99 @@ class TravellingThief:
         knapsack_population = [list(np.random.choice(sol)) for sol in np.random.choice(knapsack_solutions, self.population_size)]
 
         return tsp_population, knapsack_population
+    
+    def has_duplicates(self, sol):
+        """ Helper function for fix_duplicates() functions."""
+        # Checking if duplicates are present
+        duplicates_found = len(sol) != len(set(sol))
+        newlist, dupelist = [], []
+
+        # Only runs block if duplicates were found
+        if duplicates_found:  
+            for i in range(len(sol)):
+                if sol[i] not in newlist:
+                    # Appending if element has not been seen yet
+                    newlist.append(sol[i])
+                elif sol[i] in newlist:
+                    # Appending if element has already been found
+                    dupelist.append(sol[i])
+                    
+        return dupelist
+
+
+    def fix_duplicates(self, sol):
+        """ Helper function for crossover functions."""
+        # All elements that must be included in solution (apart from start_point)
+        full_set = set(range(self.dimension))
+        
+        # Returns any elements that have been duplicated
+        duplist = self.has_duplicates(sol)
+        
+        # Finds any elements that haven't been included in the solution
+        missing_elements = list(full_set.difference(set(sol)))
+        
+        # Performs fix only if duplicated elements were found
+        if len(duplist) != 0 :
+            for i in range(len(duplist)):
+                # Finding index of duplicated element
+                ind = sol.index(duplist[i])
+                # Replacing the duplicated element
+                sol[ind] = missing_elements[i]
+
+        return sol
+
+
+    def single_crossover(self, tsp_1, tsp_2, k_1, k_2):
+        """ Performs the single crossover, by generating a random crossover points
+        and combining them as required."""
+        # Checking that inputs are valid
+        if len(tsp_1) != len(tsp_2) or len(tsp_1) != self.dimension or len(tsp_2) != self.dimension:
+            print("Invalid crossover input")
+            return
+        
+        # Generating random crossover point (TSP)
+        crossover_point = random.randint(1,self.dimension-1)
+
+        # Creating children based on the generated crossver point
+        sol_1 = tsp_1[:crossover_point] + tsp_2[crossover_point:]
+        sol_2 = tsp_2[:crossover_point] + tsp_1[crossover_point:]
+
+        # Fixing any duplicated elements in solution
+        tsp_child_1 = self.fix_duplicates(sol_1)
+        tsp_child_2 = self.fix_duplicates(sol_2)
+
+        # Children for knapsack crossover
+        k_child_1 = k_1[:crossover_point] + k_2[crossover_point:]
+        k_child_2 = k_2[:crossover_point] + k_1[crossover_point:]
+
+        return tsp_child_1, tsp_child_2, k_child_1, k_child_2
+
+
+    def multi_crossover(self, tsp_1, tsp_2, k_1, k_2):
+        """ Performs the multi crossover, by generating two random crossover points
+        and combining them as required."""
+        # Checking that inputs are valid
+        if len(tsp_1) != len(tsp_2) or len(tsp_1) != self.dimension or len(tsp_2) != self.dimension:
+            print("Invalid crossover input")
+            return
+        
+        # Generating two random crossover point (TSP)
+        c_point_1 = random.randint(1,self.dimension-1)
+        c_point_2 = random.randint(1,self.dimension-1)
+
+        # Creating children based on the generated crossver point
+        sol_1 = tsp_1[:c_point_1] + tsp_2[c_point_1:c_point_2] + tsp_1[c_point_2:]
+        sol_2 = tsp_2[:c_point_1] + tsp_1[c_point_1:c_point_2] + tsp_2[c_point_2:]
+
+        # Fixing any duplicated elements in solution
+        child_1 = self.fix_duplicates(sol_1)
+        child_2 = self.fix_duplicates(sol_2)
+
+        # Children from knapsack crossover
+        k_child_1 = k_1[:c_point_1] + k_2[c_point_1:c_point_2] + k_1[c_point_2:]
+        k_child_2 = k_2[:c_point_1] + k_1[c_point_1:c_point_2] + k_2[c_point_2:]
+
+        return child_1, child_2, k_child_1, k_child_2
+    
+    
+
