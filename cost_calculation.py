@@ -156,3 +156,28 @@ def calculate_cost(tour, packing_plan, variables, distance_matrix, profit_table)
 
 # Example usage:
 print(calculate_cost(tour=tour_example, packing_plan=packing_plan_example, variables=variables, distance_matrix=distance_matrix, profit_table=profit_table))
+
+
+import numpy as np
+
+def get_tour(starting_index, vector):
+    half_length = len(vector) // 2
+    first_half = vector[:half_length]
+    sorted_indices = np.argsort(first_half) + 2  # Adding 2 because of zero-indexing and to include the starting index
+    sorted_indices = [starting_index] + sorted_indices.tolist()
+    return sorted_indices
+
+def get_packing_plan(vector):
+    half_length = len(vector) // 2
+    second_half = vector[half_length:]
+    packing_plan = np.where(second_half > 0.5, 1, 0)
+    return packing_plan
+
+# Example vector
+vector = np.array([0.5, 0.1, 0.8, 0.6, 0.1, 0.9])
+
+# Get tour and packing plan
+tour = get_tour(starting_index=1, vector=vector)
+packing_plan = get_packing_plan(vector)
+
+tour, packing_plan
