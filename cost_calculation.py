@@ -126,7 +126,7 @@ def calculate_cost(tour, packing_plan, variables, distance_matrix, profit_table)
         # Calculate the distance between consecutive cities
         from_city = tour[i]
         to_city = tour[(i + 1) % dimension]
-        distance = distance_matrix[from_city - 1][to_city - 1]
+        distance = round(distance_matrix[from_city - 1][to_city - 1])
 
         # Calculate the time taken to travel the distance
         time_to_travel = distance / current_velocity
@@ -141,7 +141,7 @@ def calculate_cost(tour, packing_plan, variables, distance_matrix, profit_table)
         if i < len(packing_plan):
             # Update current weight based on the packing plan
             picked_item_weight = (profit_table[(profit_table['Assigned_Node'] == to_city)]['Weight']*profit_table[(profit_table['Assigned_Node'] == to_city)]['Picked']).values[0]
-            # current_weight += picked_item_weight * packing_plan[i]
+            current_weight += picked_item_weight 
             print(f"  Knapsack weight after picking item {i + 1}: {current_weight}")
 
         # Calculate the current velocity
