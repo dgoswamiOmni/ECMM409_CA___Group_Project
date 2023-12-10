@@ -50,7 +50,7 @@ class TravellingThief:
                 elif sol[i] in newlist:
                     # Appending if element has already been found
                     dupelist.append(sol[i])
-                    
+
         return dupelist
 
 
@@ -128,5 +128,3 @@ class TravellingThief:
 
         return child_1, child_2, k_child_1, k_child_2
     
-    
-
