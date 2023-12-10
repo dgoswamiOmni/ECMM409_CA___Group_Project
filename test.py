@@ -103,13 +103,12 @@ def calculate_cost(tour, packing_plan, variables,distance_matrix,profit_table):
         total_time += time_to_travel
 
         # Update current weight based on the packing plan
-        current_weight += packing_plan[i % dimension] * profit_table['Weight'][i]
+        current_weight += packing_plan[i % dimension] * profit_table['Weight'][i] * (tour[i % dimension] == profit_table['Assigned_Node'][i])
 
         # Calculate the current velocity
-        current_velocity = calculate_current_velocity(current_weight, variables['knapsack_capacity'],
-                                                      variables['min_speed'], variables['max_speed'])
+        current_velocity = calculate_current_velocity(current_weight, variables['knapsack_capacity'],variables['min_speed'], variables['max_speed'])
+        print(i,current_weight,current_velocity,distance,time_to_travel)
 
     return total_time
-
 
 print(calculate_cost(tour=tour_example,packing_plan=packing_plan_example,variables=variables,distance_matrix=distance_matrix,profit_table=profit_table))
