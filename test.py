@@ -71,7 +71,7 @@ def calculate_distance_matrix(node_coord):
     x, y = np.meshgrid(coordinates[:, 0], coordinates[:, 1])
 
     distance_matrix = np.sqrt((x - x.T)**2 + (y - y.T)**2)
-    
+
     return distance_matrix
 
 distance_matrix=calculate_distance_matrix(node_coord)
