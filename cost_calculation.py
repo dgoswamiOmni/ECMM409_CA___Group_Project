@@ -152,7 +152,9 @@ def calculate_cost(tour, packing_plan, variables, distance_matrix, profit_table)
         total_time += time_to_travel
 
     print(f"Total traveling time: {total_time}")
-    return total_time
+    total_profit = profit_table[profit_table['Picked'] == 1]['Profit'].sum()
+
+    return total_time,total_profit
 
 # Example usage:
 print(calculate_cost(tour=tour_example, packing_plan=packing_plan_example, variables=variables, distance_matrix=distance_matrix, profit_table=profit_table))
