@@ -78,6 +78,7 @@ distance_matrix=calculate_distance_matrix(node_coord)
 
 tour_example=[1,3,2,4]
 packing_plan_example=[1,0,1]
+profit_table['Picked'] = packing_plan_example
 
 
 def calculate_current_velocity(weight, capacity, min_speed, max_speed):
@@ -86,29 +87,72 @@ def calculate_current_velocity(weight, capacity, min_speed, max_speed):
     else:
         return min_speed
 
-def calculate_cost(tour, packing_plan, variables,distance_matrix,profit_table):
+# def calculate_cost(tour, packing_plan, variables,distance_matrix,profit_table):
+#     dimension = variables['dimension']
+#     max_speed = variables['max_speed']
+
+#     current_weight = 0
+#     total_time = 0
+#     current_velocity = max_speed
+
+#     for i in range(dimension):
+#         # Calculate the distance between consecutive cities
+#         distance = distance_matrix[tour[(i % dimension)]-1][tour[(i + 1) % dimension]-1]
+
+#         # Calculate the time taken to travel the distance
+#         time_to_travel = distance / current_velocity
+#         total_time += time_to_travel
+
+#         # Update current weight based on the packing plan
+#         current_weight += (profit_table[profit_table['Assigned_Node']==tour[i+1]]['Weight']*profit_table[profit_table['Assigned_Node']==tour[i+1]]['Picked']).values[0]
+#         # Calculate the current velocity
+#         current_velocity = calculate_current_velocity(current_weight, variables['knapsack_capacity'],variables['min_speed'], variables['max_speed'])
+#         print(i,current_weight,current_velocity,distance,time_to_travel)
+
+#     return total_time
+
+# print(calculate_cost(tour=tour_example,packing_plan=packing_plan_example,variables=variables,distance_matrix=distance_matrix,profit_table=profit_table))
+
+
+def calculate_cost(tour, packing_plan, variables, distance_matrix, profit_table):
     dimension = variables['dimension']
     max_speed = variables['max_speed']
 
-    current_weight = 0
     total_time = 0
     current_velocity = max_speed
+    current_weight = 0
 
     for i in range(dimension):
         # Calculate the distance between consecutive cities
-        distance = distance_matrix[tour[(i % dimension)]-1][tour[(i + 1) % dimension]-1]
+        from_city = tour[i]
+        to_city = tour[(i + 1) % dimension]
+        distance = distance_matrix[from_city - 1][to_city - 1]
 
         # Calculate the time taken to travel the distance
         time_to_travel = distance / current_velocity
-        total_time += time_to_travel
 
-        # Update current weight based on the packing plan
-        current_weight += packing_plan[i % dimension] * profit_table['Weight'][i] * (tour[i % dimension] == profit_table['Assigned_Node'][i])
+        # Explain the current step
+        print(f"At city {from_city}:")
+        print(f"  Knapsack weight before picking: {current_weight}")
+        print(f"  Current velocity: {current_velocity}")
+        print(f"  Distance to next city ({to_city}): {distance}")
+        print(f"  Time to travel: {time_to_travel}")
+
+        if i < len(packing_plan):
+            # Update current weight based on the packing plan
+            picked_item_weight = (profit_table[(profit_table['Assigned_Node'] == to_city)]['Weight']*profit_table[(profit_table['Assigned_Node'] == to_city)]['Picked']).values[0]
+            # current_weight += picked_item_weight * packing_plan[i]
+            print(f"  Knapsack weight after picking item {i + 1}: {current_weight}")
 
         # Calculate the current velocity
-        current_velocity = calculate_current_velocity(current_weight, variables['knapsack_capacity'],variables['min_speed'], variables['max_speed'])
-        print(i,current_weight,current_velocity,distance,time_to_travel)
+        current_velocity = calculate_current_velocity(current_weight, variables['knapsack_capacity'], variables['min_speed'], variables['max_speed'])
+        print(f"  Updated velocity: {current_velocity}")
 
+        # Accumulate the time taken for this step
+        total_time += time_to_travel
+
+    print(f"Total traveling time: {total_time}")
     return total_time
 
-print(calculate_cost(tour=tour_example,packing_plan=packing_plan_example,variables=variables,distance_matrix=distance_matrix,profit_table=profit_table))
+# Example usage:
+print(calculate_cost(tour=tour_example, packing_plan=packing_plan_example, variables=variables, distance_matrix=distance_matrix, profit_table=profit_table))
